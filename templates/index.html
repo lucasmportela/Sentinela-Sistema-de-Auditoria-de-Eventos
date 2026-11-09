@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Painel de auditoria de eventos do sistema">
+  <title>Sentinela | Auditoria de eventos</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-symbol">S<span>.</span></div><div><strong>SENTINELA</strong><small>SECURITY CONSOLE</small></div></div>
+    <div class="side-label">MONITORAMENTO</div>
+    <div class="side-link active">▤ &nbsp; Registro de eventos</div>
+    <div class="side-footer"><i></i> Serviço local ativo</div>
+  </aside>
+  <main class="main">
+    <header class="topline">
+      <div><p class="eyebrow">SEGURANÇA DA INFORMAÇÃO / AUDITORIA</p><h1>Central de eventos</h1></div>
+      <div class="environment"><span></span> AMBIENTE DE DESENVOLVIMENTO</div>
+    </header>
+    <section class="intro">
+      <div><h2>Rastreabilidade em cada ação.</h2><p>Registre operações e consulte o histórico de auditoria do sistema.</p></div>
+      <div class="intro-mark">AUDIT<br><b>LOG</b></div>
+    </section>
+    <section class="stats">
+      <article class="stat-card"><span class="stat-icon purple">▤</span><div><small>EVENTOS REGISTRADOS</small><strong id="totalEventos">0</strong></div></article>
+      <article class="stat-card"><span class="stat-icon green">✓</span><div><small>OPERAÇÕES COM SUCESSO</small><strong id="totalSucesso">0</strong></div></article>
+      <article class="stat-card"><span class="stat-icon red">!</span><div><small>OPERAÇÕES COM FALHA</small><strong id="totalFalha">0</strong></div></article>
+    </section>
+    <section class="content-grid">
+      <article class="panel form-panel">
+        <div class="panel-heading"><div class="heading-icon">＋</div><div><h2>Novo evento</h2><p>Preencha os dados da operação.</p></div></div>
+        <form id="formEvento">
+          <label for="usuario">Usuário</label>
+          <input id="usuario" type="text" maxlength="100" placeholder="Nome do funcionário" autocomplete="off" required>
+          <label for="acao">Ação executada</label>
+          <select id="acao" required>
+            <option value="">Selecione uma ação</option><option value="LOGIN">LOGIN — Acesso ao sistema</option>
+            <option value="LOGOUT">LOGOUT — Encerrar sessão</option><option value="SAQUE">SAQUE — Retirada</option>
+            <option value="DEPOSITO">DEPOSITO — Depósito</option><option value="EXCLUSAO">EXCLUSAO — Exclusão</option>
+            <option value="EDICAO">EDICAO — Edição</option><option value="CONSULTA">CONSULTA — Consulta</option>
+          </select>
+          <label>Status da operação</label>
+          <div class="status-options">
+            <label class="status-choice success-choice"><input type="radio" name="status" value="SUCESSO" checked><span>✓</span> Sucesso</label>
+            <label class="status-choice failure-choice"><input type="radio" name="status" value="FALHA"><span>×</span> Falha</label>
+          </div>
+          <button class="submit-button" type="submit">Registrar evento <span>→</span></button>
+          <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+        </form>
+        <div class="privacy-note">◆ Cada registro é acrescentado ao arquivo de log, sem sobrescrever o histórico anterior.</div>
+      </article>
+      <article class="panel log-panel">
+        <div class="log-heading"><div><p class="eyebrow">TRILHA DE AUDITORIA</p><h2>Histórico de eventos</h2></div><button id="refreshButton" class="refresh-button" type="button">↻</button></div>
+        <div class="log-toolbar"><span><i class="status-dot"></i> Atualizado ao carregar</span>
+          <select id="filtroStatus" aria-label="Filtrar por status"><option value="TODOS">Todos os status</option><option value="SUCESSO">Sucesso</option><option value="FALHA">Falha</option></select>
+        </div>
+        <div id="eventList" class="event-list"><div class="empty-state">Carregando histórico...</div></div>
+        <div class="log-footer"><span>ARQUIVO: auditoria_sistema.log</span><span>Mais recentes primeiro</span></div>
+      </article>
+    </section>
+    <footer>Sentinela Audit Console <span>•</span> Projeto educacional em Python + Flask</footer>
+  </main>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body></html>
