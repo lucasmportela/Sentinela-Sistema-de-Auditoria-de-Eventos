@@ -28,7 +28,7 @@ Painel exibindo os eventos registrados, os contadores atualizados (Total, Sucess
 
 ## Estrutura
 ```text
-sentinela-auditoria-eventos/
+Sentinela-Sistema-de-Auditoria-de-Eventos/
 ├── app.py
 ├── requirements.txt
 ├── README.md
@@ -52,8 +52,8 @@ sentinela-auditoria-eventos/
 
 ### 1. Clone o repositório e entre na pasta do projeto
 ```bash
-git clone https://github.com/lucasmportela/sentinela-auditoria-eventos.git
-cd sentinela-auditoria-eventos
+git clone https://github.com/lucasmportela/Sentinela-Sistema-de-Auditoria-de-Eventos.git
+cd Sentinela-Sistema-de-Auditoria-de-Eventos
 ```
 
 ### 2. Crie o ambiente virtual e instale as dependências
