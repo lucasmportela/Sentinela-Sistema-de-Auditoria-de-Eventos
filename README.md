@@ -11,7 +11,7 @@ Aplicação web didática para registrar e consultar ações realizadas por usu�
 - Exibir totais de eventos, sucessos e falhas.
 - Validar os dados antes de gravar.
 
-## 📸 Demonstração Visual
+## Demonstração Visual
 
 ### Tela Inicial (Vazia)
 Aguardando o registro do primeiro evento.
