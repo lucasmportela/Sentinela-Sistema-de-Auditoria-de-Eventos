@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: sentinela-auditoria-demo
+    runtime: python
+    plan: free
+    region: virginia
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120 app:app
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEMO_SEED_DATA
+        value: "true"
+      - key: DEMO_ADMIN_EMAIL
+        value: admin@sentinela.demo
+      - key: DEMO_ADMIN_PASSWORD
+        value: "Sentinela-Demo-Admin-2026!"
+      - key: DEMO_OPERATOR_EMAIL
+        value: operador@sentinela.demo
+      - key: DEMO_OPERATOR_PASSWORD
+        value: "Sentinela-Demo-Operador-2026!"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: AUDIT_HMAC_KEY
+        generateValue: true
