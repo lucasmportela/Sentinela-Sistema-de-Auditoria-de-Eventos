@@ -257,9 +257,15 @@ def create_app(test_config=None):
         @wraps(view)
         def wrapped(*args, **kwargs):
             user = current_user()
-            if user is None:
-                return jsonify(erro="Faça login para acessar este recurso."), 401
-            g.current_user = user
+        if user is None:
+            try:
+                append_event(None, email[:80] or "Desconhecido", email[:254] or "unknown",
+                             "LOGIN", "FALHA", "Tentativa de autenticação com credenciais inválidas.",
+                             source="authentication")
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Falha ao registrar tentativa de login inválida.")
+            return jsonify(erro="E-mail ou senha inválidos."), 401
             return view(*args, **kwargs)
         return wrapped
 
@@ -438,11 +444,24 @@ def create_app(test_config=None):
                     db.session.commit()
                     return jsonify(erro="Conta temporariamente bloqueada após várias tentativas."), 429
                 db.session.commit()
+            try:
+                append_event(None, user.name, user.email, "LOGIN", "FALHA",
+                             "Tentativa de autenticação inválida.", source="authentication")
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Falha ao registrar tentativa de login inválida.")
             return jsonify(erro="E-mail ou senha inválidos."), 401
 
         user.failed_attempts = 0
         user.locked_until = None
         db.session.commit()
+        try:
+            append_event(user.id, user.name, user.email, "LOGIN", "SUCESSO",
+                         "Autenticação realizada.", source="authentication")
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Falha ao registrar autenticação bem-sucedida.")
+            return jsonify(erro="Não foi possível registrar o acesso com segurança."), 503
         session.clear()
         session.permanent = True
         session["user_id"] = user.id
@@ -558,7 +577,7 @@ def create_app(test_config=None):
         )
         if not 2 <= len(name) <= 80:
             raise click.ClickException("O nome deve ter entre 2 e 80 caracteres.")
-        if not re.fullmatch(r"[^\\s@]+@[^\\s@]+\\.[^\\s@]+", email):
+        if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
             raise click.ClickException("Informe um e-mail válido.")
         if not 10 <= len(password) <= 128:
             raise click.ClickException("A senha deve ter entre 10 e 128 caracteres.")
@@ -603,7 +622,7 @@ def create_app(test_config=None):
         ):
             raise click.ClickException("Este arquivo já foi importado anteriormente.")
 
-        normalized = content.replace("\\\\n", "\\n").replace("\\r\\n", "\\n")
+        normalized = content.replace("\\n", "\n").replace("\r\n", "\n")
         parsed_events = []
         for line in normalized.splitlines():
             match = PADRAO_EVENTO_LEGADO.fullmatch(line.strip())
@@ -667,3 +686,9 @@ if __name__ == "__main__":
             and os.getenv("FLASK_DEBUG", "false").strip().lower() in {"1", "true", "yes", "on"}
         ),
     )
+        try:
+            append_event(g.current_user.id, g.current_user.name, g.current_user.email,
+                         "LOGOUT", "SUCESSO", "Sessão encerrada.", source="authentication")
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Falha ao registrar encerramento da sessão.")
