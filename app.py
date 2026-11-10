@@ -693,9 +693,3 @@ if __name__ == "__main__":
             and os.getenv("FLASK_DEBUG", "false").strip().lower() in {"1", "true", "yes", "on"}
         ),
     )
-        try:
-            append_event(g.current_user.id, g.current_user.name, g.current_user.email,
-                         "LOGOUT", "SUCESSO", "Sessão encerrada.", source="authentication")
-        except Exception:
-            db.session.rollback()
-            app.logger.exception("Falha ao registrar encerramento da sessão.")
