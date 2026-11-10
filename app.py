@@ -257,15 +257,9 @@ def create_app(test_config=None):
         @wraps(view)
         def wrapped(*args, **kwargs):
             user = current_user()
-        if user is None:
-            try:
-                append_event(None, email[:80] or "Desconhecido", email[:254] or "unknown",
-                             "LOGIN", "FALHA", "Tentativa de autenticação com credenciais inválidas.",
-                             source="authentication")
-            except Exception:
-                db.session.rollback()
-                app.logger.exception("Falha ao registrar tentativa de login inválida.")
-            return jsonify(erro="E-mail ou senha inválidos."), 401
+            if user is None:
+                return jsonify(erro="Faça login para acessar este recurso."), 401
+            g.current_user = user
             return view(*args, **kwargs)
         return wrapped
 
@@ -426,6 +420,13 @@ def create_app(test_config=None):
 
         user = db.session.scalar(select(User).where(func.lower(User.email) == email))
         if user is None:
+            try:
+                append_event(None, email[:80] or "Desconhecido", email[:254] or "unknown",
+                             "LOGIN", "FALHA", "Tentativa de autenticação com credenciais inválidas.",
+                             source="authentication")
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Falha ao registrar tentativa de login inválida.")
             return jsonify(erro="E-mail ou senha inválidos."), 401
 
         now = int(time.time())
@@ -476,6 +477,12 @@ def create_app(test_config=None):
     @require_auth
     @csrf_required
     def logout():
+        try:
+            append_event(g.current_user.id, g.current_user.name, g.current_user.email,
+                         "LOGOUT", "SUCESSO", "Sessão encerrada.", source="authentication")
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Falha ao registrar encerramento da sessão.")
         session.clear()
         session["csrf_token"] = secrets.token_urlsafe(32)
         return jsonify(mensagem="Sessão encerrada.", csrf_token=session["csrf_token"])
