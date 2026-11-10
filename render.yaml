@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: free
     region: virginia
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && python -m compileall -q . && python -m unittest discover -s tests -v
     startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 4 --timeout 120 app:app
     healthCheckPath: /api/health
     autoDeployTrigger: commit
