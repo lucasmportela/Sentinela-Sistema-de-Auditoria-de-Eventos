@@ -326,6 +326,77 @@ def create_app(test_config=None):
                 db.session.commit()
             return event
 
+    def seed_demo_data():
+        enabled = os.getenv("DEMO_SEED_DATA", "").strip().lower() in {"1", "true", "yes", "on"}
+        if not enabled:
+            return
+
+        demo_accounts = [
+            {
+                "name": "Administrador de demonstração",
+                "email": os.getenv("DEMO_ADMIN_EMAIL", "").strip().lower(),
+                "password": os.getenv("DEMO_ADMIN_PASSWORD", ""),
+                "role": "admin",
+            },
+            {
+                "name": "Operador de demonstração",
+                "email": os.getenv("DEMO_OPERATOR_EMAIL", "").strip().lower(),
+                "password": os.getenv("DEMO_OPERATOR_PASSWORD", ""),
+                "role": "operator",
+            },
+        ]
+
+        for account in demo_accounts:
+            if not account["email"] or len(account["password"]) < 10:
+                raise RuntimeError(
+                    "Configure os e-mails e senhas de demonstração; as senhas devem ter pelo menos 10 caracteres."
+                )
+
+            existing_user = db.session.scalar(
+                select(User).where(func.lower(User.email) == account["email"])
+            )
+            if existing_user is None:
+                db.session.add(User(
+                    name=account["name"],
+                    email=account["email"],
+                    password_hash=generate_password_hash(account["password"]),
+                    role=account["role"],
+                    is_active=True,
+                    failed_attempts=0,
+                    created_at=utc_now(),
+                ))
+            elif existing_user.role != account["role"]:
+                raise RuntimeError("Uma conta de demonstração já existe com um papel incompatível.")
+
+        db.session.commit()
+
+        # Os exemplos são inseridos apenas em um banco vazio e nunca substituem eventos existentes.
+        if db.session.scalar(select(AuditEvent.id).limit(1)) is None:
+            admin = db.session.scalar(
+                select(User).where(User.email == demo_accounts[0]["email"])
+            )
+            operator = db.session.scalar(
+                select(User).where(User.email == demo_accounts[1]["email"])
+            )
+            examples = [
+                (admin, "LOGIN", "SUCESSO", "Acesso administrativo de demonstração."),
+                (operator, "DEPOSITO", "SUCESSO", "Exemplo de registro de operação concluída."),
+                (operator, "CONSULTA", "SUCESSO", "Exemplo de consulta registrada na trilha."),
+                (operator, "SAQUE", "FALHA", "Exemplo de operação recusada para fins de demonstração."),
+            ]
+            for actor, action, status, details in examples:
+                append_event(
+                    actor_id=actor.id,
+                    actor_name=actor.name,
+                    actor_email=actor.email,
+                    action=action,
+                    status=status,
+                    details=details,
+                    source="demo_seed",
+                )
+
+    seed_demo_data()
+
     def verify_integrity():
         state = db.session.get(AuditChainState, 1)
         if state is None:
@@ -390,7 +461,26 @@ def create_app(test_config=None):
 
     @app.get("/")
     def index():
-        return render_template("index.html")
+        demo_enabled = os.getenv("DEMO_SEED_DATA", "").strip().lower() in {"1", "true", "yes", "on"}
+        demo_credentials = None
+        if demo_enabled:
+            demo_credentials = {
+                "admin_email": os.getenv("DEMO_ADMIN_EMAIL", ""),
+                "admin_password": os.getenv("DEMO_ADMIN_PASSWORD", ""),
+                "operator_email": os.getenv("DEMO_OPERATOR_EMAIL", ""),
+                "operator_password": os.getenv("DEMO_OPERATOR_PASSWORD", ""),
+            }
+        return render_template("index.html", demo_credentials=demo_credentials)
+
+    @app.get("/api/health")
+    def health():
+        try:
+            db.session.execute(select(1))
+            return jsonify(status="ok"), 200
+        except Exception:
+            db.session.rollback()
+            app.logger.exception("Falha na verificação de saúde do Sentinela.")
+            return jsonify(status="unavailable"), 503
 
     @app.get("/api/status")
     def status():
