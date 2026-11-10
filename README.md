@@ -32,7 +32,11 @@ Central de eventos com as funções apenas de usuário.
 
 ## Demonstração online
 
-A configuração de publicação está pronta no arquivo `render.yaml`. Para criar a demonstração gratuita no Render, abra o [Blueprint do Sentinela no Render](https://dashboard.render.com/blueprint/new?repo=https://github.com/lucasmportela/Sentinela-Sistema-de-Auditoria-de-Eventos), conecte o GitHub se solicitado e clique em **Apply**. Depois que o deploy ficar `live`, acesse: **[Abrir demonstração do Sentinela](https://sentinela-auditoria-demo-ygtj.onrender.com)**.
+O Sentinela já está publicado no Render e pode ser acessado diretamente pelo link abaixo. **Não é necessário criar um serviço, configurar um Blueprint ou realizar um deploy para testar a aplicação.**
+
+**[Abrir demonstração do Sentinela](https://sentinela-auditoria-demo-ygtj.onrender.com)**
+
+A demonstração utiliza o plano gratuito do Render. Após um período de inatividade, o serviço pode ser suspenso temporariamente; por isso, o primeiro acesso pode levar cerca de um minuto. O arquivo `render.yaml` permanece no repositório como referência da configuração de implantação.
 
 O ambiente é compartilhado e utiliza exclusivamente dados fictícios. As credenciais abaixo são públicas e destinadas apenas à avaliação:
 
