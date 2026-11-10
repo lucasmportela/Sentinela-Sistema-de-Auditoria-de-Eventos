@@ -395,7 +395,8 @@ def create_app(test_config=None):
                     source="demo_seed",
                 )
 
-    seed_demo_data()
+    with app.app_context():
+        seed_demo_data()
 
     def verify_integrity():
         state = db.session.get(AuditChainState, 1)
