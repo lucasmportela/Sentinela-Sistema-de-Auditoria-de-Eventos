@@ -113,10 +113,13 @@ class TestSentinelaSecurity(unittest.TestCase):
         self.assertEqual(me.status_code, 200)
         self.assertEqual(me.get_json()["user"]["email"], "operador@example.com")
 
-    def test_invalid_login_does_not_create_session(self):
+    def test_invalid_login_does_not_create_session_and_is_audited(self):
         response = self.login(password="senha-incorreta")
         self.assertEqual(response.status_code, 401)
         self.assertEqual(self.client.get("/api/me").status_code, 401)
+        with self.app.app_context():
+            failed = db.session.query(AuditEvent).filter_by(action="LOGIN", status="FALHA").one()
+            self.assertEqual(failed.source, "authentication")
 
     def test_five_failed_logins_lock_account_temporarily(self):
         for _ in range(4):
@@ -161,7 +164,7 @@ class TestSentinelaSecurity(unittest.TestCase):
             response = self.request_json("POST", "/api/eventos", data, self.csrf)
             self.assertEqual(response.status_code, 400)
         with self.app.app_context():
-            self.assertEqual(db.session.scalar(select_count_events()), 0)
+            self.assertEqual(db.session.scalar(select_count_events()), 1)
 
     def test_events_are_persisted_in_relational_database(self):
         self.login()
@@ -175,7 +178,7 @@ class TestSentinelaSecurity(unittest.TestCase):
             "SESSION_COOKIE_SECURE": False,
         })
         with second_app.app_context():
-            self.assertEqual(db.session.query(AuditEvent).count(), 1)
+            self.assertEqual(db.session.query(AuditEvent).count(), 2)
 
     def test_events_are_returned_newest_first(self):
         self.login()
@@ -198,9 +201,9 @@ class TestSentinelaSecurity(unittest.TestCase):
 
     def test_hash_chain_detects_event_content_tampering(self):
         self.login()
-        self.create_event()
+        self.create_event("SAQUE")
         with self.app.app_context():
-            event = db.session.query(AuditEvent).one()
+            event = db.session.query(AuditEvent).filter_by(action="SAQUE").one()
             event.status = "FALHA"
             db.session.commit()
         self.login("admin@example.com", "AdminPassword123")
@@ -210,9 +213,9 @@ class TestSentinelaSecurity(unittest.TestCase):
 
     def test_signed_checkpoint_detects_deletion_of_last_event(self):
         self.login()
-        self.create_event()
+        self.create_event("SAQUE")
         with self.app.app_context():
-            event = db.session.query(AuditEvent).one()
+            event = db.session.query(AuditEvent).filter_by(action="SAQUE").one()
             db.session.delete(event)
             db.session.commit()
         self.login("admin@example.com", "AdminPassword123")
