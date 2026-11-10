@@ -431,6 +431,13 @@ def create_app(test_config=None):
 
         now = int(time.time())
         if user.locked_until and user.locked_until > now:
+            try:
+                append_event(None, user.name, user.email, "LOGIN", "FALHA",
+                             "Tentativa durante bloqueio temporário da conta.",
+                             source="authentication")
+            except Exception:
+                db.session.rollback()
+                app.logger.exception("Falha ao registrar tentativa durante bloqueio.")
             return jsonify(erro="Conta temporariamente bloqueada.", retry_after=user.locked_until - now), 429
 
         if user.locked_until and user.locked_until <= now:
@@ -443,6 +450,13 @@ def create_app(test_config=None):
                 if user.failed_attempts >= MAX_LOGIN_ATTEMPTS:
                     user.locked_until = now + LOCKOUT_SECONDS
                     db.session.commit()
+                    try:
+                        append_event(None, user.name, user.email, "LOGIN", "FALHA",
+                                     "Conta bloqueada após várias tentativas de autenticação.",
+                                     source="authentication")
+                    except Exception:
+                        db.session.rollback()
+                        app.logger.exception("Falha ao registrar bloqueio da conta.")
                     return jsonify(erro="Conta temporariamente bloqueada após várias tentativas."), 429
                 db.session.commit()
             try:
