@@ -210,13 +210,19 @@ def create_app(test_config=None):
         PERMANENT_SESSION_LIFETIME=1800,
         MAX_CONTENT_LENGTH=16 * 1024,
         LEGACY_LOG_PATH=str(BASE_DIR / "auditoria_sistema.log"),
-        DEMO_SEED_DATA=(
-            app_env == "production"
-            and os.getenv("DEMO_SEED_DATA", "").strip().lower() in {"1", "true", "yes", "on"}
-        ),
+        DEMO_SEED_DATA=False,
     )
     if test_config:
         app.config.update(test_config)
+
+    # Só habilita o seed em produção; testes podem habilitá-lo explicitamente.
+    app.config["DEMO_SEED_DATA"] = bool(
+        (
+            app.config["APP_ENV"] == "production"
+            and os.getenv("DEMO_SEED_DATA", "").strip().lower() in {"1", "true", "yes", "on"}
+        )
+        or (test_config and test_config.get("DEMO_SEED_DATA", False))
+    )
 
     if app.config["APP_ENV"] == "production":
         if len(app.config["SECRET_KEY"]) < 32:
