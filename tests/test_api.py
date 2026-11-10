@@ -107,6 +107,7 @@ class TestSentinelaSecurity(unittest.TestCase):
                     "AUDIT_HMAC_KEY": "demo-test-audit-key-with-enough-entropy-123",
                     "SQLALCHEMY_DATABASE_URI": "sqlite:///" + database_path.as_posix(),
                     "SESSION_COOKIE_SECURE": False,
+                    "DEMO_SEED_DATA": True,
                 })
 
             with demo_app.app_context():
