@@ -20,7 +20,24 @@
       <div class="login-brand"><div class="brand-symbol">S<span>.</span></div><div><strong>SENTINELA</strong><small>SECURITY CONSOLE</small></div></div>
       <p class="eyebrow">ACESSO RESTRITO</p>
       <h1>Entre na central de auditoria</h1>
-      <p class="login-description">Use sua conta corporativa para registrar eventos e consultar a trilha de auditoria.</p>
+      <p class="login-description">Use sua conta para registrar eventos e consultar a trilha de auditoria.</p>
+      {% if demo_credentials %}
+      <section class="demo-access" aria-label="Credenciais públicas de demonstração">
+        <div class="demo-access-heading"><strong>Ambiente de demonstração</strong><span>Dados fictícios</span></div>
+        <p>Contas compartilhadas para avaliação. Não informe dados reais.</p>
+        <div class="demo-account">
+          <strong>Administrador</strong>
+          <span>E-mail: <code>{{ demo_credentials.admin_email }}</code></span>
+          <span>Senha: <code>{{ demo_credentials.admin_password }}</code></span>
+        </div>
+        <div class="demo-account">
+          <strong>Operador</strong>
+          <span>E-mail: <code>{{ demo_credentials.operator_email }}</code></span>
+          <span>Senha: <code>{{ demo_credentials.operator_password }}</code></span>
+        </div>
+        <small>Os registros deste ambiente podem ser reiniciados automaticamente.</small>
+      </section>
+      {% endif %}
       <form id="loginForm">
         <label for="loginEmail">E-mail</label>
         <input id="loginEmail" type="email" autocomplete="username" maxlength="254" required placeholder="voce@empresa.com">
@@ -88,7 +105,7 @@
 
         <article class="panel log-panel">
           <div class="log-heading"><div><p class="eyebrow">TRILHA DE AUDITORIA</p><h2>Histórico de eventos</h2></div><button id="refreshButton" class="refresh-button" type="button" aria-label="Atualizar histórico">↻</button></div>
-          <div class="log-toolbar"><span><i class="status-dot"></i> Banco de dados central</span>
+          <div class="log-toolbar"><span><i class="status-dot"></i> Banco relacional de demonstração</span>
             <select id="filtroStatus" aria-label="Filtrar por status"><option value="TODOS">Todos os status</option><option value="SUCESSO">Sucesso</option><option value="FALHA">Falha</option></select>
           </div>
           <div id="eventList" class="event-list"><div class="empty-state">Carregando histórico...</div></div>
