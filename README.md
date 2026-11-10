@@ -18,7 +18,17 @@ Aplicação web de auditoria com autenticação individual, armazenamento relaci
 
 ## Demonstração visual
 
-As capturas de tela antigas representam a versão anterior, sem autenticação. Atualize os arquivos em `docs/screenshots/` após executar a versão atual.
+### Tela Login 
+Tela inicial para efetuar o login com as entradas email e senha.
+![Tela Login](docs/screenshots/tela-login.png)
+
+### Tela Admin
+Central de eventos com todas as funcionalidades administrativas. 
+![Tela Admin](docs/screenshots/tela-admin.png)
+
+### Tela Usuário
+Central de eventos com as funções apenas de usuário.
+![Tela Usuário](docs/screenshots/tela-usuario.png)
 
 ## Tecnologias
 - Backend: Python 3.10+, Flask e Flask-SQLAlchemy.
