@@ -32,9 +32,9 @@ Central de eventos com as funções apenas de usuário.
 
 ## Demonstração online
 
-A demonstração pública está hospedada no Render:
+A configuração de publicação está pronta no arquivo `render.yaml`. Para criar a demonstração gratuita no Render, abra o [Blueprint do Sentinela no Render](https://dashboard.render.com/blueprint/new?repo=https://github.com/lucasmportela/Sentinela-Sistema-de-Auditoria-de-Eventos), conecte o GitHub se solicitado e clique em **Apply**. Depois que o primeiro deploy ficar `live`, acesse:
 
-**[Abrir Sentinela — demonstração online](https://sentinela-auditoria-demo.onrender.com)**
+**https://sentinela-auditoria-demo.onrender.com**
 
 O ambiente é compartilhado e utiliza exclusivamente dados fictícios. As credenciais abaixo são públicas e destinadas apenas à avaliação:
 
@@ -45,7 +45,7 @@ O ambiente é compartilhado e utiliza exclusivamente dados fictícios. As creden
 
 O administrador pode consultar usuários e verificar a integridade da cadeia. O operador pode registrar e consultar eventos. Visitantes compartilham o mesmo ambiente; portanto, os eventos criados podem ser vistos por outras pessoas.
 
-**Limitações do plano gratuito:** a demonstração usa SQLite em armazenamento temporário. O serviço pode ser suspenso após um período sem tráfego e os dados locais podem ser apagados após suspensão, reinicialização ou nova publicação. Na próxima inicialização, as contas e os eventos fictícios são recriados automaticamente. O primeiro acesso após a suspensão pode levar cerca de um minuto. Não insira informações pessoais, confidenciais ou dados reais.
+**Limitações do plano gratuito:** a demonstração usa SQLite no sistema de arquivos efêmero do serviço. O serviço pode ser suspenso após inatividade; dados locais podem ser apagados após suspensão ou nova publicação. Na próxima inicialização, as contas e os eventos fictícios são recriados automaticamente. Não insira informações pessoais, confidenciais ou dados reais. O primeiro acesso após a suspensão pode levar cerca de um minuto.
 
 Para uso persistente, configure PostgreSQL e um plano de hospedagem adequado, além de backups e gestão independente das chaves de integridade.
 
