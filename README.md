@@ -135,6 +135,8 @@ python -m unittest discover -s tests -v
 
 A suíte cobre autenticação, CSRF, bloqueio de login, autorização, identidade do autor, persistência relacional, importação do log legado, encadeamento HMAC e detecção de adulteração.
 
+**Total: 20 testes automatizados**, cobrindo os fluxos de autenticação e sessão, permissões por papel, proteção CSRF, bloqueio de tentativas inválidas, persistência dos eventos e integridade da trilha de auditoria.
+
 ## Segurança e operação
 
 - Em produção, use PostgreSQL, HTTPS, `APP_ENV=production`, `SECRET_KEY` e `AUDIT_HMAC_KEY` fortes.
