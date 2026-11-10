@@ -55,3 +55,14 @@ footer{padding:23px 0 0;color:#66748a;font-size:9px;text-align:center}footer spa
 .integrity-feedback{color:#8794a9;font-size:9px;text-align:right}.integrity-feedback.valid{color:#72d5a3}.integrity-feedback.invalid{color:#f08c91}
 textarea{min-height:72px;padding:10px;resize:vertical}
 @media(max-width:700px){.identity-bar{align-items:flex-start;flex-direction:column}.integrity-feedback{text-align:left}.session-actions{width:100%}.login-panel{margin:4vh auto;padding:24px}}
+
+.demo-access{margin:18px 0 20px;padding:14px;border:1px solid #514778;border-radius:7px;background:#211f35}
+.demo-access-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.demo-access-heading strong{color:#e3d9ff;font-size:11px}
+.demo-access-heading span{padding:4px 6px;border-radius:4px;background:#302a4b;color:#c5b4ff;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.demo-access>p{margin:8px 0 12px;color:#a9a5c1;font-size:9px;line-height:1.5}
+.demo-account{display:grid;gap:5px;margin-top:8px;padding:9px;border:1px solid #3b3655;border-radius:5px;background:#191a2a}
+.demo-account>strong{color:#c9baff;font-size:9px;text-transform:uppercase;letter-spacing:.7px}
+.demo-account span{color:#aeb8c9;font-size:9px;overflow-wrap:anywhere}
+.demo-account code{color:#f0edff;font-size:9px;user-select:all}
+.demo-access>small{display:block;margin-top:11px;color:#8d8aa5;font-size:8px;line-height:1.5}
