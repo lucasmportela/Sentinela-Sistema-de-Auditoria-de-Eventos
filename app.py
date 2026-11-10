@@ -210,6 +210,10 @@ def create_app(test_config=None):
         PERMANENT_SESSION_LIFETIME=1800,
         MAX_CONTENT_LENGTH=16 * 1024,
         LEGACY_LOG_PATH=str(BASE_DIR / "auditoria_sistema.log"),
+        DEMO_SEED_DATA=(
+            app_env == "production"
+            and os.getenv("DEMO_SEED_DATA", "").strip().lower() in {"1", "true", "yes", "on"}
+        ),
     )
     if test_config:
         app.config.update(test_config)
@@ -327,8 +331,7 @@ def create_app(test_config=None):
             return event
 
     def seed_demo_data():
-        enabled = os.getenv("DEMO_SEED_DATA", "").strip().lower() in {"1", "true", "yes", "on"}
-        if not enabled:
+        if not app.config.get("DEMO_SEED_DATA", False):
             return
 
         demo_accounts = [
@@ -462,9 +465,8 @@ def create_app(test_config=None):
 
     @app.get("/")
     def index():
-        demo_enabled = os.getenv("DEMO_SEED_DATA", "").strip().lower() in {"1", "true", "yes", "on"}
         demo_credentials = None
-        if demo_enabled:
+        if app.config.get("DEMO_SEED_DATA", False):
             demo_credentials = {
                 "admin_email": os.getenv("DEMO_ADMIN_EMAIL", ""),
                 "admin_password": os.getenv("DEMO_ADMIN_PASSWORD", ""),
