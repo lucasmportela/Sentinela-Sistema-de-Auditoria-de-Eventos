@@ -1,6 +1,7 @@
 """Testes de autenticação, persistência e integridade do Sentinela."""
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from werkzeug.security import generate_password_hash
@@ -82,6 +83,54 @@ class TestSentinelaSecurity(unittest.TestCase):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("text/html", response.content_type)
+
+    def test_health_endpoint_confirms_database_connectivity(self):
+        response = self.client.get("/api/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json()["status"], "ok")
+
+    def test_demo_mode_seeds_accounts_and_audited_sample_events(self):
+        with tempfile.TemporaryDirectory(prefix="sentinela-demo-tests-") as directory:
+            database_path = Path(directory) / "demo.db"
+            demo_environment = {
+                "DEMO_SEED_DATA": "true",
+                "DEMO_ADMIN_EMAIL": "admin@sentinela.demo",
+                "DEMO_ADMIN_PASSWORD": "Sentinela-Demo-Admin-2026!",
+                "DEMO_OPERATOR_EMAIL": "operador@sentinela.demo",
+                "DEMO_OPERATOR_PASSWORD": "Sentinela-Demo-Operador-2026!",
+            }
+            with patch.dict("os.environ", demo_environment):
+                demo_app = create_app({
+                    "TESTING": True,
+                    "APP_ENV": "testing",
+                    "SECRET_KEY": "demo-test-secret-key-with-enough-entropy-123",
+                    "AUDIT_HMAC_KEY": "demo-test-audit-key-with-enough-entropy-123",
+                    "SQLALCHEMY_DATABASE_URI": "sqlite:///" + database_path.as_posix(),
+                    "SESSION_COOKIE_SECURE": False,
+                })
+
+            with demo_app.app_context():
+                self.assertEqual(db.session.query(User).count(), 2)
+                self.assertEqual(db.session.query(AuditEvent).count(), 4)
+                self.assertTrue(
+                    db.session.get(AuditChainState, 1).event_count == 4
+                )
+                db.session.remove()
+
+            client = demo_app.test_client()
+            csrf = client.get("/api/status").get_json()["csrf_token"]
+            login = client.post(
+                "/api/login",
+                json={
+                    "email": "admin@sentinela.demo",
+                    "password": "Sentinela-Demo-Admin-2026!",
+                },
+                headers={"X-CSRF-Token": csrf},
+            )
+            self.assertEqual(login.status_code, 200)
+            integrity = client.get("/api/integridade")
+            self.assertEqual(integrity.status_code, 200)
+            self.assertTrue(integrity.get_json()["valid"])
 
     def test_status_issues_csrf_token_and_reports_anonymous_session(self):
         response = self.client.get("/api/status")
