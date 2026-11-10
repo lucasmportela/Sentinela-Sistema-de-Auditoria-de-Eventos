@@ -5,7 +5,14 @@ __pycache__/
 venv/
 .env
 
-# Arquivos locais de auditoria
+# Banco local e chave de integridade (nunca versionar)
+instance/
+*.db
+*.sqlite
+*.sqlite3
+audit_hmac.key
+
+# Arquivos legados de auditoria
 auditoria_sistema.log
 *.log
 
