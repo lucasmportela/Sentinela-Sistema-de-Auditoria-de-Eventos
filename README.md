@@ -30,6 +30,25 @@ Central de eventos com todas as funcionalidades administrativas.
 Central de eventos com as funções apenas de usuário.
 ![Tela Usuário](docs/screenshots/tela-usuario.png)
 
+## Demonstração online
+
+A demonstração pública está hospedada no Render:
+
+**[Abrir Sentinela — demonstração online](https://sentinela-auditoria-demo.onrender.com)**
+
+O ambiente é compartilhado e utiliza exclusivamente dados fictícios. As credenciais abaixo são públicas e destinadas apenas à avaliação:
+
+| Perfil | E-mail | Senha |
+|---|---|---|
+| Administrador | `admin@sentinela.demo` | `Sentinela-Demo-Admin-2026!` |
+| Operador | `operador@sentinela.demo` | `Sentinela-Demo-Operador-2026!` |
+
+O administrador pode consultar usuários e verificar a integridade da cadeia. O operador pode registrar e consultar eventos. Visitantes compartilham o mesmo ambiente; portanto, os eventos criados podem ser vistos por outras pessoas.
+
+**Limitações do plano gratuito:** a demonstração usa SQLite em armazenamento temporário. O serviço pode ser suspenso após um período sem tráfego e os dados locais podem ser apagados após suspensão, reinicialização ou nova publicação. Na próxima inicialização, as contas e os eventos fictícios são recriados automaticamente. O primeiro acesso após a suspensão pode levar cerca de um minuto. Não insira informações pessoais, confidenciais ou dados reais.
+
+Para uso persistente, configure PostgreSQL e um plano de hospedagem adequado, além de backups e gestão independente das chaves de integridade.
+
 ## Tecnologias
 - Backend: Python 3.10+, Flask e Flask-SQLAlchemy.
 - Banco de dados: SQLite local ou PostgreSQL centralizado.
@@ -110,6 +129,7 @@ O comando importa os registros reconhecidos, preserva o nome histórico do autor
 
 | Método | Rota | Acesso | Descrição |
 |---|---|---|---|
+| GET | `/api/health` | Público | Verifica a disponibilidade da aplicação e do banco |
 | GET | `/api/status` | Público | Estado da sessão e token CSRF |
 | POST | `/api/login` | Público + CSRF | Autenticação |
 | POST | `/api/logout` | Autenticado + CSRF | Encerramento da sessão |
@@ -135,7 +155,7 @@ python -m unittest discover -s tests -v
 
 A suíte cobre autenticação, CSRF, bloqueio de login, autorização, identidade do autor, persistência relacional, importação do log legado, encadeamento HMAC e detecção de adulteração.
 
-**Total: 20 testes automatizados**, cobrindo os fluxos de autenticação e sessão, permissões por papel, proteção CSRF, bloqueio de tentativas inválidas, persistência dos eventos e integridade da trilha de auditoria.
+**Total: 22 testes automatizados**, cobrindo os fluxos de autenticação e sessão, permissões por papel, proteção CSRF, bloqueio de tentativas inválidas, persistência dos eventos e integridade da trilha de auditoria.
 
 ## Segurança e operação
 
