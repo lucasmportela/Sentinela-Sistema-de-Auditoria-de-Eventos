@@ -5,6 +5,7 @@ Aplicação web de auditoria com autenticação individual, armazenamento relaci
 ## Funcionalidades
 - Login e logout com contas provisionadas por administrador.
 - Papéis `operator` e `admin`, com autorização verificada no backend.
+- Tentativas de login bem-sucedidas e malsucedidas também são registradas na trilha de auditoria.
 - Senhas armazenadas com hash seguro do Werkzeug.
 - Proteção CSRF, cookies de sessão `HttpOnly` e `SameSite`, expiração e cookies `Secure` em produção.
 - Bloqueio temporário após cinco tentativas de login incorretas.
