@@ -185,7 +185,7 @@ class TestSentinelaSecurity(unittest.TestCase):
         self.create_event("LOGIN", "SUCESSO", "Primeiro")
         self.create_event("LOGOUT", "FALHA", "Segundo")
         events = self.client.get("/api/eventos").get_json()["eventos"]
-        self.assertEqual([event["detalhes"] for event in events], ["Segundo", "Primeiro"])
+        self.assertEqual([event["detalhes"] for event in events[:2]], ["Segundo", "Primeiro"])
 
     def test_operator_cannot_verify_integrity_or_list_users(self):
         self.login()
@@ -236,6 +236,8 @@ class TestSentinelaSecurity(unittest.TestCase):
         response = self.request_json("POST", "/api/logout", {}, self.csrf)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.client.get("/api/me").status_code, 401)
+        with self.app.app_context():
+            self.assertEqual(db.session.query(AuditEvent).filter_by(action="LOGOUT").count(), 1)
 
     def test_inactive_user_cannot_continue_using_session(self):
         self.login()
