@@ -1,5 +1,7 @@
 # Sentinela — Sistema de Auditoria de Eventos
 
+[![CI](https://github.com/lucasmportela/Sentinela-Sistema-de-Auditoria-de-Eventos/actions/workflows/ci.yml/badge.svg)](https://github.com/lucasmportela/Sentinela-Sistema-de-Auditoria-de-Eventos/actions/workflows/ci.yml)
+
 Aplicação web de auditoria com autenticação individual, armazenamento relacional centralizado e trilha de integridade criptográfica. O servidor identifica o autor pela sessão autenticada; o cliente não pode atribuir um evento a outro usuário.
 
 ## Funcionalidades
