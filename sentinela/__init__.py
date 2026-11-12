@@ -16,7 +16,13 @@ from .utils import utc_now
 
 def create_app(test_config=None):
     """Cria e configura uma instância da aplicação Sentinela."""
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(
+        __name__,
+        instance_path=str(BASE_DIR / "instance"),
+        instance_relative_config=True,
+        template_folder=str(BASE_DIR / "templates"),
+        static_folder=str(BASE_DIR / "static"),
+    )
     app_env = os.getenv("APP_ENV", "development").strip().lower()
     secret_key = os.getenv("SECRET_KEY")
 
