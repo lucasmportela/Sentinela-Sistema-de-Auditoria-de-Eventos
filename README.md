@@ -59,19 +59,37 @@ Para uso persistente, configure PostgreSQL e um plano de hospedagem adequado, al
 - Frontend: HTML5, CSS3 e JavaScript.
 - Testes: unittest e Flask test client.
 
-## Estrutura
+## Arquitetura e estrutura
+
+A aplicação segue uma organização modular por responsabilidade. O arquivo `app.py` permanece como ponto de entrada compatível com o Render (`app:app`) e com os comandos do Flask.
+
 ```text
 Sentinela-Sistema-de-Auditoria-de-Eventos/
-├── app.py
-├── requirements.txt
-├── .env.example
-├── README.md
+├── app.py                    # Ponto de entrada e compatibilidade
+├── sentinela/
+│   ├── __init__.py            # Application factory e inicialização
+│   ├── config.py              # Configurações e constantes
+│   ├── extensions.py          # SQLAlchemy e lock de escrita
+│   ├── models.py              # Modelos do banco
+│   ├── security.py            # Sessões, CSRF, autorização e HMAC key
+│   ├── audit.py               # Eventos, assinatura e verificação da cadeia
+│   ├── cli.py                 # Comandos administrativos e importação legada
+│   ├── utils.py               # Utilitários compartilhados
+│   └── routes/
+│       ├── __init__.py        # Registro dos Blueprints
+│       ├── web.py             # Página inicial e endpoints públicos
+│       ├── auth.py            # Login, logout e sessão
+│       ├── events.py          # Consulta e criação de eventos
+│       └── admin.py           # Integridade e administração
 ├── tests/test_api.py
-├── templates/index.html
-├── static/css/style.css
-├── static/js/app.js
-└── docs/screenshots/
+├── templates/
+├── static/
+├── docs/
+├── requirements.txt
+└── render.yaml
 ```
+
+Cada módulo concentra uma responsabilidade específica: rotas são registradas por Blueprints, regras de auditoria ficam separadas das regras de autenticação e os modelos são compartilhados por meio da extensão SQLAlchemy. A separação preserva os endpoints existentes e não exige alteração no comando de inicialização do Render.
 
 ## Como executar no Windows (PowerShell)
 
